@@ -1,0 +1,265 @@
+---
+title: "kegg_net"
+author: "fdelogu"
+date: "1/8/2019"
+output: html_document
+---
+
+```{r load libraries and settings}
+
+options(stringsAsFactors=F)
+wd <- paste0(getwd(), "/")
+
+library(tidyverse)
+
+```
+
+
+```{r define ulrs}
+
+rn.url <- "http://rest.kegg.jp/list/rn"
+rnx.url <- "http://rest.kegg.jp/get/"
+rn2rc.url <- "http://rest.kegg.jp/link/rc/rn"
+ko2rn.url <- "http://rest.kegg.jp/link/rn/ko"
+
+```
+
+
+```{r download list rn}
+
+if(!file.exists(paste0(wd, "data/rn.txt"))){
+  print("Downloading the reaction list...")
+  download.file(rn.url, paste0(wd, "data/rn.txt"))
+} else {
+  print("rn.txt is already present, check if it needs an update")
+}
+  
+```
+
+
+```{r load list rn}
+
+rn.list <- read.table(paste0(wd, "data/rn.txt"), header=F, sep="\t", quote="", fill=F)[,1]
+length(rn.list)
+
+```
+
+```{r download link rn rc}
+
+if(!file.exists(paste0(wd, "data/rn2rc.txt"))){
+  print("Downloading the reaction to reaction class link...")
+  download.file(rn2rc.url, paste0(wd, "data/rn2rc.txt"))
+} else {
+  print("rn2rc.txt is already present, check if it needs an update")
+}
+  
+```
+
+```{r load link rn rc}
+
+rn2rc <- read.table(paste0(wd, "data/rn2rc.txt"), header=F, sep="\t", quote="", fill=F, col.names=c("RC", "RN"))
+dim(rn2rc)
+head(rn2rc)
+
+```
+
+
+```{r filter rn with rc}
+
+rn.list.subset <- rn.list[rn.list%in%rn2rc$RN]
+length(rn.list.subset)
+
+```
+
+```{r download all rc.list.subset}
+
+m=0
+s=0.2
+
+sum(abs(rnorm(length(rn.list.subset), m, s)))/60 # Estimate of the waiting time + actual download
+
+c=0
+for(i in rn.list.subset){
+  c=c+1
+  if(!file.exists(paste0(wd, "data/reactions/", substr(i, 4, str_length(i)), ".txt"))){
+    Sys.sleep(abs(rnorm(1, m, s))) # Decide if you want ot be nice with Kegg repo (you may be kicked out if you don't)
+    download.file(paste0(rnx.url, i), paste0(wd, "data/reactions/", substr(i, 4, str_length(i)), ".txt"))
+  }
+  if(c%%1000==0){
+    print(paste0(c, " out of ", length(rn.list.subset), " reactions checked"))
+  }
+}
+
+```
+
+```{r list the cofactors}
+
+cofactors <- c(
+  "C00234", # 10-FORMYL-THF
+  "C00024", # ACETYL-COA
+  "C00008", # ADP
+  "C00020", # AMP
+  "C00002", # ATP
+  "C00010", # CO-A
+  "C00035", # GDP
+  "C00064", # GLN - L-Glutamine
+  "C00025", # GLT - L-Glutamate
+  "C00044", # GTP
+  "C00004", # NADH
+  "C00005", # NADPH
+  "C00006", # NADP
+  "C00003", # NAD
+  "C00074", # PHOSPHO-ENOL-PYRUVATE
+  "C00100", # PROPIONYL-COA
+  "C00022", # PYRUVATE
+  "C00091", # SUC-COA
+  "C00101", # THF
+  "C00028", # Acceptor
+  "C00126", # Cytochromes-C-Reduced
+  "C00524", # Cytochromes-C
+  "C00030", # Donor-H2
+  "C03161", # Oxidized-flavodoxins
+  "C03024" # Reduced-flavodoxins
+)
+
+```
+
+```{r parse reactions}
+
+if(!file.exists(paste0(wd, "data/rn2cpd_nocofactors.txt"))){
+  rn2cpd <- data.frame(RN="", CPD="")
+  for(i in rn.list.subset){
+    parsed.rn <- unlist(str_split(read_file(paste0(wd, "data/reactions/", substr(i, 4, str_length(i)), ".txt")), "\n"))
+    line.rc <- parsed.rn[grepl("RCLASS", parsed.rn)]
+    if(!identical(line.rc, character(0))){
+      split.rc <- unlist(str_split(line.rc, "\\s+"))
+      parsed.rc <- unlist(str_split(split.rc[3:(length(split.rc)-1)], "_"))
+      no.cofactor <- sort(parsed.rc[unlist(lapply(list(parsed.rc), function(x) ifelse(x%in%cofactors, F, T)))])
+      if(!identical(no.cofactor, character(0))){
+        rn2cpd <- rbind(rn2cpd, c(i, paste0(no.cofactor, collapse=";")))
+      }
+    }
+  }
+  rn2cpd <- rn2cpd[-1,]
+  write.table(rn2cpd, file=paste0(wd, "data/rn2cpd_nocofactors.txt"), col.names=T, row.names=F, quote=F)
+} else {
+  rn2cpd <- read.table(paste0(wd, "data/rn2cpd_nocofactors.txt"), header=T)
+}
+
+dim(rn2cpd)
+head(rn2cpd)
+
+```
+
+
+```{r download link ko rn}
+
+if(!file.exists(paste0(wd, "data/ko2rn.txt"))){
+  print("Downloading the ko to reaction link...")
+  download.file(ko2rn.url, paste0(wd, "data/ko2rn.txt"))
+} else {
+  print("ko2rn.txt is already present, check if it needs an update")
+}
+  
+```
+
+```{r load link ko rn}
+
+ko2rn <- read.table(paste0(wd, "data/ko2rn.txt"), header=F, sep="\t", quote="", fill=F, col.names=c("KO", "RN"))
+dim(ko2rn)
+head(ko2rn)
+
+```
+
+```{r extract multi-entry function}
+
+explosion <- function(df, col1, x){
+  return(df[df[,col1]==x,])
+}
+
+concussion <- function(df1, df2, col1){
+  
+  df3 <- 1:(ncol(df1)+ncol(df2)-1)
+  
+  inter_inex <- unique(df1[,col1])[unique(df1[,col1])%in%unique(df2[,col1])]
+  
+  for(i in inter_inex){
+    
+    left_block <- as.data.frame(explosion(df1, col1, i))
+    right_block <- as.data.frame(explosion(df2, col1, i)[,colnames(df2)[colnames(df2)!=col1]])
+    
+    for(j in 1:nrow(left_block)){
+      for(z in 1:nrow(right_block)){
+        df3 <- rbind(df3, t(c(unlist(left_block[j,]), unlist(right_block[z,]))))
+      }
+    }
+    
+  }
+  
+  colnames(df3) <- c(colnames(df1), colnames(df2)[colnames(df2)!=col1])
+  
+  
+  return(as.data.frame(df3[-1,]))
+}
+
+```
+
+```{r map ko to rn2cpd w/o cofactors}
+
+ko2cpd <- concussion(ko2rn, rn2cpd, "RN")
+dim(ko2cpd)
+head(ko2cpd)
+
+```
+
+```{r collapse KOs with same CPDs}
+
+tmp <- unique(ko2cpd$CPD)
+cpd2cko <- data.frame(CPD=tmp, CKO=paste0("CKO", 1:length(tmp)))
+
+ko2cko <- concussion(ko2cpd, cpd2cko, "CPD")
+
+dim(ko2cko)
+head(ko2cko)
+
+rm(tmp)
+
+```
+
+```{r compute net}
+
+check_CPDs <- function(x, y){
+  x <- unlist(str_split(x, ";"))
+  y <- unlist(str_split(y, ";"))
+  return(sum((x%in%y)+0))
+}
+
+if(!file.exists(paste0(wd, "data/CKO_Adj.txt"))){
+  adj <- matrix(rep(0, nrow(cpd2cko)**2), nrow=nrow(cpd2cko))
+  colnames(adj) <- cpd2cko$CKO
+  rownames(adj) <- cpd2cko$CKO
+  
+  for(i in 1:(nrow(cpd2cko)-1)){
+    for(j in (i+1):nrow(cpd2cko)){
+      adj[cpd2cko$CKO[i],cpd2cko$CKO[j]] <- check_CPDs(cpd2cko$CPD[i],cpd2cko$CPD[j])
+    }
+  }
+  
+  adj[lower.tri(adj)] = t(adj)[lower.tri(adj)]
+  write.table(adj, paste0(wd, "data/CKO_Adj.txt"), quote=F)
+} else {
+  adj <- data.matrix(read.table(paste0(wd, "data/CKO_Adj.txt")))
+}
+
+```
+
+```{r check the adjacency matrix}
+
+plot(density(adj))
+hist(colSums(adj))
+
+```
+
+
+
+

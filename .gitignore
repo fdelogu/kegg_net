@@ -1,0 +1,6 @@
+# Ignore following files:
+data/rn.txt
+data/rn2rc.txt
+data/CKO_Adj.txt
+data/ko2rn.txt
+data/rn2cpd_nocofactors.txt
