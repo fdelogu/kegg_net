@@ -219,10 +219,12 @@ cpd2cko <- data.frame(CPD=tmp, CKO=paste0("CKO", 1:length(tmp)))
 
 ko2cko <- concussion(ko2cpd, cpd2cko, "CPD")
 
+rm(tmp)
+
+write.table(ko2cko, file=paste0(wd, "data/ko2cko.txt"), col.names=T, row.names=F, quote=F)
+
 dim(ko2cko)
 head(ko2cko)
-
-rm(tmp)
 
 ```
 
