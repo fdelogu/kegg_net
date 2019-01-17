@@ -1,0 +1,83 @@
+---
+title: "KEGG Orthology Hierarchy Parser"
+output: html_notebook
+---
+
+```{r load libraries and settings}
+
+options(stringsAsFactors=F)
+wd <- paste0(getwd(), "/")
+
+library(tidyverse)
+library(jsonlite)
+
+```
+
+
+```{r define ulrs}
+
+ko.json <- "https://www.genome.jp/kegg-bin/download_htext?htext=ko00001&format=json&filedir="
+
+```
+
+
+```{r downaload KO json}
+
+if(!file.exists(paste0(wd, "data/ko.json"))){
+  print("Downloading the ko json file...")
+  download.file(ko.json, paste0(wd, "data/ko.json"))
+} else {
+  print("ko.json is already present, check if it needs an update")
+}
+
+```
+
+
+```{r read json}
+
+if(!file.exists(paste0(wd, "data/ko.txt"))){
+
+  KOmap.json <- jsonlite::fromJSON(paste0(wd, "data/ko.json"), flatten=F)
+  
+  KOmap.df <- data.frame(A_code="", A_name="",
+                  B_code="", B_name="",
+                  C_code="", C_name="",
+                  C_extra="",
+                  D_code="", D_name="",
+                  D_extra="")
+  
+  A <- KOmap.json$children
+  for(a in 1:(length(A$name))){
+    B <- A$children[[a]]
+    for(b in 1:(length(B$name))){
+      C <- B$children[[b]]
+      for(c in 1:(length(C$name))){
+        D <- C$children[[c]]
+        for(d in 1:(length(D$name))){
+          
+          c_parsed = unlist(str_split(C$name[[c]], "\\["))
+          d_parsed = unlist(str_split(D$name[[d]], "\\["))
+          
+          new_entry <- c(substr(A$name[[a]], 1, 5), substr(A$name[[a]], 7, str_length(A$name[[a]])),
+                         substr(B$name[[b]], 1, 5), substr(B$name[[b]], 7, str_length(B$name[[b]])),
+                         substr(C$name[[c]], 1, 5), substr(c_parsed[1], 7, (str_length(c_parsed[1])-1)),
+                         unlist(str_split(c_parsed[2], "]"))[1],
+                         substr(D$name[[d]], 1, 6), substr(d_parsed[1], 8, (str_length(d_parsed[1])-1)),
+                         unlist(str_split(d_parsed[2], "]"))[1])
+        
+          KOmap.df <- rbind(KOmap.df, new_entry)
+        }
+      }
+    }
+  }
+  KOmap.df <- KOmap.df[-1,]
+  write.table(KOmap.df, paste0(wd, "data/ko.txt"), col.names=T, row.names=F, quote=F, sep="\t")
+  
+} else {
+  KOmap.df <- read.table(paste0(wd, "data/ko.txt"), header=T)
+}
+
+dim(KOmap.df)
+head(KOmap.df)
+
+```

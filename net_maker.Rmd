@@ -1,5 +1,5 @@
 ---
-title: "kegg_net"
+title: "KEGG Orthology Network Maker"
 author: "fdelogu"
 date: "1/8/2019"
 output: html_document
@@ -21,8 +21,11 @@ rn.url <- "http://rest.kegg.jp/list/rn"
 rnx.url <- "http://rest.kegg.jp/get/"
 rn2rc.url <- "http://rest.kegg.jp/link/rc/rn"
 ko2rn.url <- "http://rest.kegg.jp/link/rn/ko"
+ko.json <- "https://www.genome.jp/kegg-bin/download_htext?htext=ko00001&format=json&filedir="
 
 ```
+
+
 
 
 ```{r download list rn}
@@ -233,7 +236,7 @@ head(ko2cko)
 check_CPDs <- function(x, y){
   x <- unlist(str_split(x, ";"))
   y <- unlist(str_split(y, ";"))
-  return(sum((x%in%y)+0))
+  return(ifelse(sum((x%in%y)+0)>0, 1, 0))
 }
 
 if(!file.exists(paste0(wd, "data/CKO_Adj.txt"))){
@@ -261,7 +264,3 @@ plot(density(adj))
 hist(colSums(adj))
 
 ```
-
-
-
-

@@ -6,9 +6,14 @@ The generation of the network follows the one described in Roume et al. 2015, Bi
 
 In this representation each node of the network is a Collapsed KEGG Orthology term (CKO) summarising all the KOs which reactions have the same metabolites. A map between CKOs and KOs is given to relate back the simplified nodes with the orginal entries.
 
+The network can be used for further analysis, for instance this is the relationship between number of nodes and average gedree for each metabolic pathway listed in KEGG:
+![alt text](https://github.com/fdelogu/kegg_net/master/results/kegg_NDeg.png)
+
 ## Folder structure and files
 
-- main_script.Rmd R Markdown notebook containing the script. It evaluates the needed files, download them and build the network.
+- net_maker.Rmd It evaluates the needed files, download them and build the network.
+- ko_hierarchy_parser.Rmd It downloads the KEGG Orthology and Brite hierarchy and parses it.
+- net_analyzer.Rmd It does some basic analysis of the previously built network.
 - README.md Readme file.
 - data/ Will contain some intermediate tables and maps between different types of KEGG entries (e.g. reaction-reaction classes, etc.):
 - data/reactions/ Will be populated by the entries of the reactions (RN) dataset of KEGG.

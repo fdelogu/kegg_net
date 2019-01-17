@@ -1,0 +1,139 @@
+---
+title: "KEGG Orthology Network Analyzer"
+output: html_notebook
+---
+
+```{r load libraries and settings}
+
+options(stringsAsFactors=F)
+wd <- paste0(getwd(), "/")
+
+library(tidyverse)
+library(igraph)
+
+```
+
+
+```{r load data}
+
+if(file.exists(paste0(wd, "data/ko.txt"))){
+  KOmap.df <- read.table(paste0(wd, "data/ko.txt"), header=T, sep="\t")
+} else {
+  print("You should run ko_hierarchy_parser.Rmd first.")
+}
+
+if(file.exists(paste0(wd, "data/ko2cko.txt"))){
+  ko2cko <- read.table(paste0(wd, "data/ko2cko.txt"), header=T)
+} else {
+  print("You should run net_maker.Rmd first.")
+}
+
+if(file.exists(paste0(wd, "data/CKO_Adj.txt"))){
+  adj <- data.matrix(read.table(paste0(wd, "data/CKO_Adj.txt")))
+} else {
+  print("You should run net_maker.Rmd first.")
+}
+
+```
+
+
+```{r compute degree}
+
+deg <- colSums(adj)
+top10nodes <- sort(deg, decreasing=T)[1:10]
+
+top10nodes
+
+```
+
+```{r find corresponding KOs}
+
+explosion <- function(df, col1, x){
+  return(df[df[,col1]==x,])
+}
+
+ko2cko.subset <- data.frame(t(rep("", ncol(ko2cko))))
+colnames(ko2cko.subset) <- colnames(ko2cko)
+for(i in names(top10nodes)){
+  ko2cko.subset <- rbind(ko2cko.subset, explosion(ko2cko, "CKO", i))
+}
+ko2cko.subset <- ko2cko.subset[-1,]
+
+ko2cko.subset
+
+```
+
+```{r find KOs names}
+
+concussion <- function(df1, df2, col1){
+  
+  df3 <- 1:(ncol(df1)+ncol(df2)-1)
+  
+  inter_inex <- unique(df1[,col1])[unique(df1[,col1])%in%unique(df2[,col1])]
+  
+  for(i in inter_inex){
+    
+    left_block <- as.data.frame(explosion(df1, col1, i))
+    right_block <- as.data.frame(explosion(df2, col1, i)[,colnames(df2)[colnames(df2)!=col1]])
+    
+    for(j in 1:nrow(left_block)){
+      for(z in 1:nrow(right_block)){
+        df3 <- rbind(df3, t(c(unlist(left_block[j,]), unlist(right_block[z,]))))
+      }
+    }
+    
+  }
+  
+  colnames(df3) <- c(colnames(df1), colnames(df2)[colnames(df2)!=col1])
+  
+  
+  return(as.data.frame(df3[-1,]))
+}
+
+to_map <- ko2cko.subset %>%
+  mutate(D_code=unlist(str_split(KO, ":"))[2])
+
+mapped_df <- concussion(KOmap.df, to_map, "D_code")
+
+mapped_df %>%
+  group_by(D_name, CKO) %>%
+  summarise(n=n())
+
+rm(ko2cko.subset, to_map, mapped_df)
+```
+
+## Metabolic pathway centrality
+
+```{r Subset KOmap to Metabolism only}
+
+KOmap.metabolism <- KOmap.df %>%
+  filter(A_name=="Metabolism")
+
+deg.df <- data.frame(DEG=deg, CKO=names(deg))
+
+ko2cko.subset <- concussion(ko2cko, deg.df, "CKO")
+
+to_map <- ko2cko.subset %>%
+  separate(KO, c("ko", "D_code"), sep=":") %>%
+  select(-ko)
+
+
+deg2KOmap <- concussion(to_map, KOmap.metabolism, "D_code")
+
+dim(deg2KOmap)
+```
+
+
+```{r Plot average degree vs #nodes per metabolism pathway}
+
+deg2KOmap %>%
+  group_by(B_name, C_name) %>%
+  summarise(n=n(), avr_deg=mean(as.numeric(DEG))) %>%
+  ggplot(aes(x=n, y=avr_deg, color=B_name)) +
+  geom_point() +
+  labs(x="Number of nodes", y="Average degree", title="Whole KEGG network") +
+  guides(color=guide_legend(title="Metabolism")) +
+  geom_smooth(method="lm", se=F) +
+  theme_classic()
+
+```
