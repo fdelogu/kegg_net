@@ -7,7 +7,7 @@ The generation of the network follows the one described in Roume et al. 2015, Bi
 In this representation each node of the network is a Collapsed KEGG Orthology term (CKO) summarising all the KOs which reactions have the same metabolites. A map between CKOs and KOs is given to relate back the simplified nodes with the orginal entries.
 
 The network can be used for further analysis, for instance this is the relationship between number of nodes and average gedree for each metabolic pathway listed in KEGG:
-![alt text](https://github.com/fdelogu/kegg_net/master/results/kegg_NDeg.png)
+![alt text](/results/kegg_NDeg.png)
 
 ## Folder structure and files
 
