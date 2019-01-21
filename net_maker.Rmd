@@ -60,7 +60,7 @@ if(!file.exists(paste0(wd, "data/rn2rc.txt"))){
 
 ```{r load link rn rc}
 
-rn2rc <- read.table(paste0(wd, "data/rn2rc.txt"), header=F, sep="\t", quote="", fill=F, col.names=c("RC", "RN"))
+rn2rc <- read.table(paste0(wd, "data/rn2rc.txt"), header=F, sep="\t", quote="", fill=F, col.names=c("RN", "RC"))
 dim(rn2rc)
 head(rn2rc)
 
@@ -136,7 +136,7 @@ if(!file.exists(paste0(wd, "data/rn2cpd_nocofactors.txt"))){
     line.rc <- parsed.rn[grepl("RCLASS", parsed.rn)]
     if(!identical(line.rc, character(0))){
       split.rc <- unlist(str_split(line.rc, "\\s+"))
-      parsed.rc <- unlist(str_split(split.rc[3:(length(split.rc)-1)], "_"))
+      parsed.rc <- unlist(str_split(split.rc[3:(length(split.rc))], "_"))
       no.cofactor <- sort(parsed.rc[unlist(lapply(list(parsed.rc), function(x) ifelse(x%in%cofactors, F, T)))])
       if(!identical(no.cofactor, character(0))){
         rn2cpd <- rbind(rn2cpd, c(i, paste0(no.cofactor, collapse=";")))
@@ -150,7 +150,7 @@ if(!file.exists(paste0(wd, "data/rn2cpd_nocofactors.txt"))){
 }
 
 dim(rn2cpd)
-head(rn2cpd)
+head(rn2cpd, n=10)
 
 ```
 
