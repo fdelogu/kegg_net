@@ -1,6 +1,14 @@
 ---
 title: "KEGG Orthology Hierarchy Parser"
-output: html_notebook
+author: "fdelogu"
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "results") })
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
 ---
 
 ```{r load libraries and settings}
@@ -74,7 +82,7 @@ if(!file.exists(paste0(wd, "data/ko.txt"))){
   write.table(KOmap.df, paste0(wd, "data/ko.txt"), col.names=T, row.names=F, quote=F, sep="\t")
   
 } else {
-  KOmap.df <- read.table(paste0(wd, "data/ko.txt"), header=T)
+  KOmap.df <- read.table(paste0(wd, "data/ko.txt"), header=T, sep="\t")
 }
 
 dim(KOmap.df)
