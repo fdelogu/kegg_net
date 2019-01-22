@@ -7,13 +7,13 @@ The generation of the network follows the one described in Roume et al. 2015, Bi
 
 In this representation each node of the network is a Collapsed KEGG Orthology term (CKO) summarising all the KOs which reactions have the same metabolites. A map between CKOs and KOs is given to relate back the simplified nodes with the orginal entries.
 
+Network colore according to the second level of the [KEGG Patwhay and Brite Hierarchy](https://www.genome.jp/kegg-bin/get_htext?ko00001.keg) and node size proportional to the degree:
+
+![alt text](/results/net_plot.png)
+
 The network can be used for further analysis, for instance this is the relationship between number of nodes and average gedree for each metabolic pathway listed in KEGG:
 
 ![alt text](/results/kegg_NDeg.png)
-
-Network colore according to the second level of the (KEGG Patwhay and Brite Hierarchy)[https://www.genome.jp/kegg-bin/get_htext?ko00001.keg] and node size proportional to the degree:
-
-![alt text](/results/net_plot.png)
 
 ## Folder structure and files
 
