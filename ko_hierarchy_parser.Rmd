@@ -1,21 +1,9 @@
 ---
 title: "KEGG Orthology Hierarchy Parser"
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding, output_dir = "results") })
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    theme: united
+output: html_notebook
 ---
 
-# KEGG Orthology Hierarchy Parser
-
-## Getting started
-
-### Set options and load libraries
-
-```{r load libraries and settings, message=F}
+```{r load libraries and settings}
 
 options(stringsAsFactors=F)
 wd <- paste0(getwd(), "/")
@@ -25,7 +13,6 @@ library(jsonlite)
 
 ```
 
-### Save KEGG urls
 
 ```{r define ulrs}
 
@@ -33,9 +20,6 @@ ko.json <- "https://www.genome.jp/kegg-bin/download_htext?htext=ko00001&format=j
 
 ```
 
-### The KO heararchy
-
-Download the KEGG Orthology and Brite Hierarchy:
 
 ```{r downaload KO json}
 
@@ -48,7 +32,6 @@ if(!file.exists(paste0(wd, "data/ko.json"))){
 
 ```
 
-Parse the file to make a data frame and print it out:
 
 ```{r read json}
 
@@ -91,7 +74,7 @@ if(!file.exists(paste0(wd, "data/ko.txt"))){
   write.table(KOmap.df, paste0(wd, "data/ko.txt"), col.names=T, row.names=F, quote=F, sep="\t")
   
 } else {
-  KOmap.df <- read.table(paste0(wd, "data/ko.txt"), header=T, sep="\t")
+  KOmap.df <- read.table(paste0(wd, "data/ko.txt"), header=T)
 }
 
 dim(KOmap.df)

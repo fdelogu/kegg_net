@@ -1,22 +1,9 @@
 ---
 title: "KEGG Orthology Network Analyzer"
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding, output_dir = "results") })
-output:
-  html_document:
-    self_contained: no
-    toc: true
-    toc_float: true
-    theme: united
+output: html_notebook
 ---
 
-# KEGG Orthology Network Analyzer
-
-## Getting started
-
-### Set options and load libraries
-
-```{r load libraries and settings, message=F}
+```{r load libraries and settings}
 
 options(stringsAsFactors=F)
 wd <- paste0(getwd(), "/")
@@ -26,7 +13,6 @@ library(igraph)
 
 ```
 
-### Load premade maps and the adjacency matrix
 
 ```{r load data}
 
@@ -50,11 +36,6 @@ if(file.exists(paste0(wd, "data/CKO_Adj.txt"))){
 
 ```
 
-## Topological analysis
-
-### Degree distribution
-
-Compute the degree distribution of the metabolic network:
 
 ```{r compute degree}
 
@@ -64,8 +45,6 @@ top10nodes <- sort(deg, decreasing=T)[1:10]
 top10nodes
 
 ```
-
-Map the CKOs on the original KOs
 
 ```{r find corresponding KOs}
 
@@ -83,8 +62,6 @@ ko2cko.subset <- ko2cko.subset[-1,]
 ko2cko.subset
 
 ```
-
-Map the retrieved KOs on the names form the Hierarchy:
 
 ```{r find KOs names}
 
@@ -125,9 +102,7 @@ mapped_df %>%
 rm(ko2cko.subset, to_map, mapped_df)
 ```
 
-### Average degree of different metabolisms
-
-We want to use the netwrok to compute the average degree for each metabolism compared to the number of nodes they have. Subset the *KOmap* to the metabolic only entries, then map it on the CKOs and take the intersection.
+## Metabolic pathway centrality
 
 ```{r Subset KOmap to Metabolism only}
 
@@ -142,17 +117,16 @@ to_map <- ko2cko.subset %>%
   separate(KO, c("ko", "D_code"), sep=":") %>%
   select(-ko)
 
+
 deg2KOmap <- concussion(to_map, KOmap.metabolism, "D_code")
 
 dim(deg2KOmap)
-
 ```
 
-Plot the everage degree vs. the number of nodes for each metabolism.
 
 ```{r Plot average degree vs #nodes per metabolism pathway}
 
-plt1 <- deg2KOmap %>%
+deg2KOmap %>%
   group_by(B_name, C_name) %>%
   summarise(n=n(), avr_deg=mean(as.numeric(DEG))) %>%
   ggplot(aes(x=n, y=avr_deg, color=B_name)) +
@@ -161,84 +135,5 @@ plt1 <- deg2KOmap %>%
   guides(color=guide_legend(title="Metabolism")) +
   geom_smooth(method="lm", se=F) +
   theme_classic()
-
-ggsave(paste0(wd, "results/kegg_NDeg.png"), plt1, width=10, height=6, dpi=300)
-plt1
-rm(deg2KOmap, to_map, ko2cko.subset, KOmap.metabolism)
-
-```
-
-## Plot the network
-
-### Simple plot
-
-Plot the network using the degree of the nodes to set their size.
-
-```{r Plot network}
-
-G <- graph_from_adjacency_matrix(adj, mode=c("undirected"), weighted = NULL, diag = TRUE)
-
-table(table(components(G)$membership)) # Number of connected componenets per number of nodes in it
-
-to_map <- ko2cko %>%
-  separate(KO, c("ko", "D_code"), sep=":") %>%
-  select(-ko)
-
-CKO2KOmap <- concussion(to_map, KOmap.df, "D_code")
-
-G1.names <- names(components(G)$membership)[components(G)$membership==2] # Isolate the largest component
-G1 <- graph_from_adjacency_matrix(adj[G1.names,G1.names], mode=c("undirected"), weighted = NULL, diag = TRUE)
-plot(degree.distribution(G1))
-
-l <- layout_with_kk(G1)
-V(G1)$size <- log10(degree(G1))*5
-V(G1)$shape <- "circle"
-
-plot(G1, edge.arrow.size=.0, vertex.label=NA, layout=l)
-
-```
-
-### Plot and annotation
-
-Color the nodes using the information in the second level of the KEGG Pathways and Brite Hierarchy (*B_name*). Nodes with more than one label will have more than one color. If the node does not have a term will be grey.
-
-```{r Plot network and annotation}
-
-A_class <- as.factor(c(unique(CKO2KOmap$B_name), "Unclassified"))  # HERE
-tmp <- CKO2KOmap %>%
-  group_by(CKO, B_name) %>%  # HERE
-  summarise(n=n())
-color_list <- as.list(rep("", length(unique(ko2cko$CKO))))
-names(color_list) <- unique(ko2cko$CKO)
-tmp_holder <- unique(CKO2KOmap$CKO)
-for(i in unique(ko2cko$CKO)){
-  if(i %in% tmp_holder){
-    a <- rep(0, length(A_class))
-    names(a) <- levels(A_class)
-    b <- explosion(tmp, "CKO", i)
-    a[factor(b$B_name, levels=levels(A_class))] <- b$n   # HERE
-  } else {
-    a <- c(rep(0, (length(A_class)-1)), 1)
-    names(a) <- levels(A_class)
-  }
-  color_list[[i]] <- as.vector(a) #/sum(as.vector(a))
-}
-
-nodes_shares <- unlist(lapply(color_list, function(x) sum(ifelse(x>0, 1, 0))==1))
-pure_nodes <- names(nodes_shares)[nodes_shares]
-
-png(paste0(wd, "results/net_plot.png"))
-plot(G1, edge.arrow.size=.0, vertex.label=NA, layout=l,
-     vertex.shape="pie",  vertex.pie=color_list[names(V(G1))],
-     vertex.pie.color=list(c(heat.colors(length(A_class)-1), "grey")),
-     )
-dev.off()
-
-plot(G1, edge.arrow.size=.0, vertex.label=NA, layout=l,
-     vertex.shape="pie",  vertex.pie=color_list[names(V(G1))],
-     vertex.pie.color=list(c(heat.colors(length(A_class)-1), "grey")),
-     )
-
-# vertex.shape=c("pie", "circle")[(names(V(G1))%in%pure_nodes)+1], 
 
 ```

@@ -1,23 +1,11 @@
 ---
 title: "KEGG Orthology Network Maker"
 author: "fdelogu"
-date: '`r format(Sys.time(), "%d %B, %Y")`'
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding, output_dir = "results") })
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    theme: united
+date: "1/8/2019"
+output: html_document
 ---
 
-# KEGG Orthology Network Maker
-
-## Getting started
-
-### Set options and load libraries
-
-```{r load libraries and settings, message=F}
+```{r load libraries and settings}
 
 options(stringsAsFactors=F)
 wd <- paste0(getwd(), "/")
@@ -26,7 +14,6 @@ library(tidyverse)
 
 ```
 
-### Save KEGG urls
 
 ```{r define ulrs}
 
@@ -38,11 +25,8 @@ ko.json <- "https://www.genome.jp/kegg-bin/download_htext?htext=ko00001&format=j
 
 ```
 
-## The KEGG dataset
 
-### The RN dataset
 
-The reaction dataset (RN) lists all the reactions with their formulas. We will use the reaction codes listed in the KEGG dataset to start building the node set of the netowork. Download the RN dataset:
 
 ```{r download list rn}
 
@@ -55,7 +39,6 @@ if(!file.exists(paste0(wd, "data/rn.txt"))){
   
 ```
 
-Load the data into R:
 
 ```{r load list rn}
 
@@ -63,10 +46,6 @@ rn.list <- read.table(paste0(wd, "data/rn.txt"), header=F, sep="\t", quote="", f
 length(rn.list)
 
 ```
-
-### The RN-RC map
-
-The reactions in KEGG are grouped into reaction classes ([RCs](https://www.genome.jp/kegg/reaction/)) which share "chemical structure transformation fatterns of substrate-product pairs". Download the map between RN and RC:
 
 ```{r download link rn rc}
 
@@ -79,8 +58,6 @@ if(!file.exists(paste0(wd, "data/rn2rc.txt"))){
   
 ```
 
-Load the map into R:
-
 ```{r load link rn rc}
 
 rn2rc <- read.table(paste0(wd, "data/rn2rc.txt"), header=F, sep="\t", quote="", fill=F, col.names=c("RN", "RC"))
@@ -89,9 +66,6 @@ head(rn2rc)
 
 ```
 
-### Intersect RN and RC
-
-If a reaction does not have a reaction class, it can be omitted. Thus, intersect the two datsets:
 
 ```{r filter rn with rc}
 
@@ -100,18 +74,12 @@ length(rn.list.subset)
 
 ```
 
-### Compounds
-
-All the reactions use reactants, called "Compounds" ([CPD](https://www.genome.jp/kegg/compound/)) in KEGG. We have to find the main reaction pair for each reaction. Thus download all the reactions from the previous intersection:
-
-WARNING: This may require more than 1 hour. There is an extra courtesy time after each request to prevent KEGG to cut yout IP out. You may dicide to twich this time by tuning the parameters *m* and *s*, which ae the mean and standard deviation of the abs(normal distribution) to pick the waiting time from.
-
 ```{r download all rc.list.subset}
 
 m=0
 s=0.2
 
-sum(abs(rnorm(length(rn.list.subset), m, s)))/60 # Estimate of the waiting time (on top fo the actual download time)
+sum(abs(rnorm(length(rn.list.subset), m, s)))/60 # Estimate of the waiting time + actual download
 
 c=0
 for(i in rn.list.subset){
@@ -126,10 +94,6 @@ for(i in rn.list.subset){
 }
 
 ```
-
-### Cofators
-
-The cofactors are compounds shared by many reactions without being their main reactants. In order to obrain a metabolic netowrk and improve the sparsity of it the cofactors must be removed. A list of cofator follows:
 
 ```{r list the cofactors}
 
@@ -163,8 +127,6 @@ cofactors <- c(
 
 ```
 
-Parse all the downloaded reactions and extract the compound from the *RCLASS* row. Exlude all the compounds that are also cofactors:
-
 ```{r parse reactions}
 
 if(!file.exists(paste0(wd, "data/rn2cpd_nocofactors.txt"))){
@@ -188,15 +150,10 @@ if(!file.exists(paste0(wd, "data/rn2cpd_nocofactors.txt"))){
 }
 
 dim(rn2cpd)
-head(rn2cpd)
+head(rn2cpd, n=10)
 
 ```
 
-## Nodes of the network
-
-### Kegg Orthology
-
-The nodes will be a form of KEGG Orthology entries ([KOs](https://www.genome.jp/kegg/ko.html)), so we need to interface the reactions with the KOs. Downlaod the RN KO map:
 
 ```{r download link ko rn}
 
@@ -209,8 +166,6 @@ if(!file.exists(paste0(wd, "data/ko2rn.txt"))){
   
 ```
 
-Load the map into R:
-
 ```{r load link ko rn}
 
 ko2rn <- read.table(paste0(wd, "data/ko2rn.txt"), header=F, sep="\t", quote="", fill=F, col.names=c("KO", "RN"))
@@ -218,12 +173,6 @@ dim(ko2rn)
 head(ko2rn)
 
 ```
-
-### Collapsed KEGG Ortholgy
-
-Several KOs may have the same compounds, making them equivalent and redundant in this analysis. Therefore we collapse them into single entries.
-
-First of all prepare some utility functions to map two data frames (*left* and *right*) which share a column name. The column with the same name will be intersected and used to extract all the combinantions of rows from *left* and *right* with the same key entry. The output is the concatenations of these rows.
 
 ```{r extract multi-entry function}
 
@@ -258,8 +207,6 @@ concussion <- function(df1, df2, col1){
 
 ```
 
-Map KOs with the filtered RNs without cofactors:
-
 ```{r map ko to rn2cpd w/o cofactors}
 
 ko2cpd <- concussion(ko2rn, rn2cpd, "RN")
@@ -267,8 +214,6 @@ dim(ko2cpd)
 head(ko2cpd)
 
 ```
-
-Finally collapse the KOs with the same CPDs and generate the Collapsed Kegg Orthology (CKO): our nodes.
 
 ```{r collapse KOs with same CPDs}
 
@@ -285,12 +230,6 @@ dim(ko2cko)
 head(ko2cko)
 
 ```
-
-## Edges of the network
-
-### CKO-CPD network
-
-All the nodes (CKOs) that share at least a CPD are linked by an edge. Multiple CPDs does not stack beacuse the network is binary (0 and 1 edge vaules allowed only). Compute the network:
 
 ```{r compute net}
 
@@ -318,10 +257,6 @@ if(!file.exists(paste0(wd, "data/CKO_Adj.txt"))){
 }
 
 ```
-
-### Adjaceny matrix checks
-
-Check the density distribution of the adjacency matrix: there should be a single peak at 1 (the edges). Then check the degree distribution of the nodes.
 
 ```{r check the adjacency matrix}
 
