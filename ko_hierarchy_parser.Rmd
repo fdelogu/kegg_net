@@ -11,7 +11,7 @@ output:
     theme: united
 ---
 
-```{r load libraries and settings}
+```{r load libraries and settings, message=F}
 
 options(stringsAsFactors=F)
 wd <- paste0(getwd(), "/")
@@ -43,7 +43,7 @@ if(!file.exists(paste0(wd, "data/ko.json"))){
 
 ```{r read json}
 
-if(!file.exists(paste0(wd, "data/ko.txt"))){
+if(!file.exists(paste0(wd, "results/ko.txt"))){
 
   KOmap.json <- jsonlite::fromJSON(paste0(wd, "data/ko.json"), flatten=F)
   
@@ -79,10 +79,10 @@ if(!file.exists(paste0(wd, "data/ko.txt"))){
     }
   }
   KOmap.df <- KOmap.df[-1,]
-  write.table(KOmap.df, paste0(wd, "data/ko.txt"), col.names=T, row.names=F, quote=F, sep="\t")
+  write.table(KOmap.df, paste0(wd, "results/ko.txt"), col.names=T, row.names=F, quote=F, sep="\t")
   
 } else {
-  KOmap.df <- read.table(paste0(wd, "data/ko.txt"), header=T, sep="\t")
+  KOmap.df <- read.table(paste0(wd, "results/ko.txt"), header=T, sep="\t")
 }
 
 dim(KOmap.df)

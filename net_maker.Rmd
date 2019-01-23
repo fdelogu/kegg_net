@@ -279,7 +279,7 @@ ko2cko <- concussion(ko2cpd, cpd2cko, "CPD")
 
 rm(tmp)
 
-write.table(ko2cko, file=paste0(wd, "data/ko2cko.txt"), col.names=T, row.names=F, quote=F)
+write.table(ko2cko, file=paste0(wd, "results/ko2cko.txt"), col.names=T, row.names=F, quote=F)
 
 dim(ko2cko)
 head(ko2cko)
@@ -300,7 +300,7 @@ check_CPDs <- function(x, y){
   return(ifelse(sum((x%in%y)+0)>0, 1, 0))
 }
 
-if(!file.exists(paste0(wd, "data/CKO_Adj.txt"))){
+if(!file.exists(paste0(wd, "results/CKO_Adj.txt"))){
   adj <- matrix(rep(0, nrow(cpd2cko)**2), nrow=nrow(cpd2cko))
   colnames(adj) <- cpd2cko$CKO
   rownames(adj) <- cpd2cko$CKO
@@ -312,9 +312,9 @@ if(!file.exists(paste0(wd, "data/CKO_Adj.txt"))){
   }
   
   adj[lower.tri(adj)] = t(adj)[lower.tri(adj)]
-  write.table(adj, paste0(wd, "data/CKO_Adj.txt"), quote=F)
+  write.table(adj, paste0(wd, "results/CKO_Adj.txt"), quote=F)
 } else {
-  adj <- data.matrix(read.table(paste0(wd, "data/CKO_Adj.txt")))
+  adj <- data.matrix(read.table(paste0(wd, "results/CKO_Adj.txt")))
 }
 
 ```

@@ -32,20 +32,20 @@ library(igraph)
 
 ```{r load data}
 
-if(file.exists(paste0(wd, "data/ko.txt"))){
-  KOmap.df <- read.table(paste0(wd, "data/ko.txt"), header=T, sep="\t")
+if(file.exists(paste0(wd, "results/ko.txt"))){
+  KOmap.df <- read.table(paste0(wd, "results/ko.txt"), header=T, sep="\t")
 } else {
   print("You should run ko_hierarchy_parser.Rmd first.")
 }
 
-if(file.exists(paste0(wd, "data/ko2cko.txt"))){
-  ko2cko <- read.table(paste0(wd, "data/ko2cko.txt"), header=T)
+if(file.exists(paste0(wd, "results/ko2cko.txt"))){
+  ko2cko <- read.table(paste0(wd, "results/ko2cko.txt"), header=T)
 } else {
   print("You should run net_maker.Rmd first.")
 }
 
-if(file.exists(paste0(wd, "data/CKO_Adj.txt"))){
-  adj <- data.matrix(read.table(paste0(wd, "data/CKO_Adj.txt")))
+if(file.exists(paste0(wd, "results/CKO_Adj.txt"))){
+  adj <- data.matrix(read.table(paste0(wd, "results/CKO_Adj.txt")))
 } else {
   print("You should run net_maker.Rmd first.")
 }
@@ -164,9 +164,9 @@ plt1 <- deg2KOmap %>%
   geom_smooth(method="lm", se=F) +
   theme_classic()
 
+rm(deg2KOmap, to_map, ko2cko.subset, KOmap.metabolism)
 ggsave(paste0(wd, "results/kegg_NDeg.png"), plt1, width=10, height=6, dpi=300)
 plt1
-rm(deg2KOmap, to_map, ko2cko.subset, KOmap.metabolism)
 
 ```
 

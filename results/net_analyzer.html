@@ -221,7 +221,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">KEGG Orthology Network Analyzer</h1>
 <h4 class="author"><em>fdelogu</em></h4>
-<h4 class="date"><em>22 januar, 2019</em></h4>
+<h4 class="date"><em>23 januar, 2019</em></h4>
 
 </div>
 
@@ -240,20 +240,20 @@ library(igraph)</code></pre>
 </div>
 <div id="load-premade-maps-and-the-adjacency-matrix" class="section level3">
 <h3>Load premade maps and the adjacency matrix</h3>
-<pre class="r"><code>if(file.exists(paste0(wd, &quot;data/ko.txt&quot;))){
-  KOmap.df &lt;- read.table(paste0(wd, &quot;data/ko.txt&quot;), header=T, sep=&quot;\t&quot;)
+<pre class="r"><code>if(file.exists(paste0(wd, &quot;results/ko.txt&quot;))){
+  KOmap.df &lt;- read.table(paste0(wd, &quot;results/ko.txt&quot;), header=T, sep=&quot;\t&quot;)
 } else {
   print(&quot;You should run ko_hierarchy_parser.Rmd first.&quot;)
 }
 
-if(file.exists(paste0(wd, &quot;data/ko2cko.txt&quot;))){
-  ko2cko &lt;- read.table(paste0(wd, &quot;data/ko2cko.txt&quot;), header=T)
+if(file.exists(paste0(wd, &quot;results/ko2cko.txt&quot;))){
+  ko2cko &lt;- read.table(paste0(wd, &quot;results/ko2cko.txt&quot;), header=T)
 } else {
   print(&quot;You should run net_maker.Rmd first.&quot;)
 }
 
-if(file.exists(paste0(wd, &quot;data/CKO_Adj.txt&quot;))){
-  adj &lt;- data.matrix(read.table(paste0(wd, &quot;data/CKO_Adj.txt&quot;)))
+if(file.exists(paste0(wd, &quot;results/CKO_Adj.txt&quot;))){
+  adj &lt;- data.matrix(read.table(paste0(wd, &quot;results/CKO_Adj.txt&quot;)))
 } else {
   print(&quot;You should run net_maker.Rmd first.&quot;)
 }</code></pre>
@@ -398,10 +398,10 @@ dim(deg2KOmap)</code></pre>
   geom_smooth(method=&quot;lm&quot;, se=F) +
   theme_classic()
 
+rm(deg2KOmap, to_map, ko2cko.subset, KOmap.metabolism)
 ggsave(paste0(wd, &quot;results/kegg_NDeg.png&quot;), plt1, width=10, height=6, dpi=300)
 plt1</code></pre>
 <p><img src="net_analyzer_files/figure-html/Plot%20average%20degree%20vs%20#nodes%20per%20metabolism%20pathway-1.png" width="672" /></p>
-<pre class="r"><code>rm(deg2KOmap, to_map, ko2cko.subset, KOmap.metabolism)</code></pre>
 </div>
 </div>
 <div id="plot-the-network" class="section level2">

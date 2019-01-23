@@ -1480,7 +1480,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">KEGG Orthology Network Maker</h1>
 <h4 class="author"><em>fdelogu</em></h4>
-<h4 class="date"><em>22 januar, 2019</em></h4>
+<h4 class="date"><em>23 januar, 2019</em></h4>
 
 </div>
 
@@ -1560,7 +1560,7 @@ length(rn.list.subset)</code></pre>
 s=0.2
 
 sum(abs(rnorm(length(rn.list.subset), m, s)))/60 # Estimate of the waiting time (on top fo the actual download time)</code></pre>
-<pre><code>## [1] 26.78345</code></pre>
+<pre><code>## [1] 26.92577</code></pre>
 <pre class="r"><code>c=0
 for(i in rn.list.subset){
   c=c+1
@@ -1723,7 +1723,7 @@ ko2cko &lt;- concussion(ko2cpd, cpd2cko, &quot;CPD&quot;)
 
 rm(tmp)
 
-write.table(ko2cko, file=paste0(wd, &quot;data/ko2cko.txt&quot;), col.names=T, row.names=F, quote=F)
+write.table(ko2cko, file=paste0(wd, &quot;results/ko2cko.txt&quot;), col.names=T, row.names=F, quote=F)
 
 dim(ko2cko)</code></pre>
 <pre><code>## [1] 7036    4</code></pre>
@@ -1748,7 +1748,7 @@ dim(ko2cko)</code></pre>
   return(ifelse(sum((x%in%y)+0)&gt;0, 1, 0))
 }
 
-if(!file.exists(paste0(wd, &quot;data/CKO_Adj.txt&quot;))){
+if(!file.exists(paste0(wd, &quot;results/CKO_Adj.txt&quot;))){
   adj &lt;- matrix(rep(0, nrow(cpd2cko)**2), nrow=nrow(cpd2cko))
   colnames(adj) &lt;- cpd2cko$CKO
   rownames(adj) &lt;- cpd2cko$CKO
@@ -1760,9 +1760,9 @@ if(!file.exists(paste0(wd, &quot;data/CKO_Adj.txt&quot;))){
   }
   
   adj[lower.tri(adj)] = t(adj)[lower.tri(adj)]
-  write.table(adj, paste0(wd, &quot;data/CKO_Adj.txt&quot;), quote=F)
+  write.table(adj, paste0(wd, &quot;results/CKO_Adj.txt&quot;), quote=F)
 } else {
-  adj &lt;- data.matrix(read.table(paste0(wd, &quot;data/CKO_Adj.txt&quot;)))
+  adj &lt;- data.matrix(read.table(paste0(wd, &quot;results/CKO_Adj.txt&quot;)))
 }</code></pre>
 </div>
 <div id="adjaceny-matrix-checks" class="section level3">
