@@ -18,14 +18,19 @@ The network can be used for further analysis, for instance this is the relations
 ## Folder structure and files
 
 ### RMarkdown notebooks:
-- net_maker.Rmd   It evaluates the needed files, download them and build the network.
-- ko_hierarchy_parser.Rmd   It downloads the KEGG Orthology and Brite hierarchy and parses it.
-- net_analyzer.Rmd   It does some basic analysis of the previously built network.
+- **net_maker.Rmd** *It evaluates the needed files, download them and build the network*
+- **ko_hierarchy_parser.Rmd** *It downloads the KEGG Orthology and Brite hierarchy and parses it*
+- **net_analyzer.Rmd** *It does some basic analysis of the previously built network.*
 
 ### Compiled notebooks:
 - results/net_maker.html 
 - results/ko_hierarchy_parser.html 
 - results/net_analyzer.html
+
+### Results:
+- **results/ko2cko.txt** *Map between KOs and the nodes (CKOs)*
+- **results/ko.txt** *KEGG Pathway and Brite Hierarchy*
+- **results/CKO_Adj.txt** *Adjacency matrix of the network*
 
 ### Figures:
 - results/kegg_NDeg.png
@@ -33,8 +38,8 @@ The network can be used for further analysis, for instance this is the relations
 
 ### Other:
 - README.md   Readme file.
-- data/   Will contain some intermediate tables and maps between different types of KEGG entries (e.g. reaction-reaction classes, etc.):
-- data/reactions/   Will be populated by the entries of the reactions (RN) dataset of KEGG.
+- data/ *Will contain some intermediate tables and maps between different types of KEGG entries (e.g. reaction-reaction classes, etc.)*
+- data/reactions/ *Will be populated by the entries of the reactions (RN) dataset of KEGG*
 
 ## To do:
 
