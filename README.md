@@ -1,9 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
-  word_document: default
----
 # KEGG Orthology and Metabolites Network
 
 General script to download and parse information from KEGG to generate a metabolic network spanning all the KEGG Orthology (KO) entries. A set of KOs can be plugged in to generate a custom network, e.g. a microbial community.
