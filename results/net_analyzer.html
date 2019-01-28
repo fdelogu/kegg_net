@@ -221,7 +221,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">KEGG Orthology Network Analyzer</h1>
 <h4 class="author"><em>fdelogu</em></h4>
-<h4 class="date"><em>23 januar, 2019</em></h4>
+<h4 class="date"><em>28 januar, 2019</em></h4>
 
 </div>
 
@@ -268,10 +268,10 @@ if(file.exists(paste0(wd, &quot;results/CKO_Adj.txt&quot;))){
 top10nodes &lt;- sort(deg, decreasing=T)[1:10]
 
 top10nodes</code></pre>
-<pre><code>##  CKO418  CKO461 CKO1881  CKO463 CKO2308  CKO454 CKO1879 CKO2024 CKO2304 
-##      57      49      44      43      43      42      42      42      42 
-## CKO2483 
-##      42</code></pre>
+<pre><code>## CKO5070 CKO2027 CKO3375 CKO3508 CKO3509 CKO2131  CKO687 CKO4778 CKO2134 
+##     365     324     324     324     324     312     302     301     300 
+## CKO3739 
+##     297</code></pre>
 <p>Map the CKOs on the original KOs</p>
 <pre class="r"><code>explosion &lt;- function(df, col1, x){
   return(df[df[,col1]==x,])
@@ -285,48 +285,38 @@ for(i in names(top10nodes)){
 ko2cko.subset &lt;- ko2cko.subset[-1,]
 
 ko2cko.subset</code></pre>
-<pre><code>##             KO        RN                  CPD     CKO
-## 2031 ko:K00787 rn:R02003        C00129;C00448  CKO418
-## 2032 ko:K00795 rn:R02003        C00129;C00448  CKO418
-## 2033 ko:K00804 rn:R02003        C00129;C00448  CKO418
-## 2034 ko:K13787 rn:R02003        C00129;C00448  CKO418
-## 2035 ko:K13789 rn:R02003        C00129;C00448  CKO418
-## 2168 ko:K00811 rn:R00355 C00026;C00036;C00049  CKO461
-## 2169 ko:K00812 rn:R00355 C00026;C00036;C00049  CKO461
-## 2170 ko:K00813 rn:R00355 C00026;C00036;C00049  CKO461
-## 2171 ko:K11358 rn:R00355 C00026;C00036;C00049  CKO461
-## 2172 ko:K14454 rn:R00355 C00026;C00036;C00049  CKO461
-## 2173 ko:K14455 rn:R00355 C00026;C00036;C00049  CKO461
-## 5246 ko:K10187 rn:R08543        C00207;C00448 CKO1881
-## 2186 ko:K00811 rn:R00734 C00026;C00082;C01179  CKO463
-## 2187 ko:K00812 rn:R00734 C00026;C00082;C01179  CKO463
-## 2188 ko:K00813 rn:R00734 C00026;C00082;C01179  CKO463
-## 2189 ko:K00815 rn:R00734 C00026;C00082;C01179  CKO463
-## 2190 ko:K00817 rn:R00734 C00026;C00082;C01179  CKO463
-## 2191 ko:K00832 rn:R00734 C00026;C00082;C01179  CKO463
-## 2192 ko:K00838 rn:R00734 C00026;C00082;C01179  CKO463
-## 2193 ko:K05821 rn:R00734 C00026;C00082;C01179  CKO463
-## 2194 ko:K11358 rn:R00734 C00026;C00082;C01179  CKO463
-## 2195 ko:K14454 rn:R00734 C00026;C00082;C01179  CKO463
-## 2196 ko:K14455 rn:R00734 C00026;C00082;C01179  CKO463
-## 2197 ko:K15849 rn:R00734 C00026;C00082;C01179  CKO463
-## 5800 ko:K14182 rn:R06523        C00448;C12142 CKO2308
-## 2158 ko:K00801 rn:R00702        C00448;C03428  CKO454
-## 2159 ko:K10208 rn:R00702        C00448;C03428  CKO454
-## 5243 ko:K10187 rn:R07647        C00448;C16143 CKO1879
-## 5438 ko:K12250 rn:R02305        C00448;C01841 CKO2024
-## 5795 ko:K14179 rn:R07649        C00448;C16141 CKO2304
-## 5796 ko:K21927 rn:R07649        C00448;C16141 CKO2304
-## 6054 ko:K15793 rn:R08697        C00448;C01126 CKO2483
-## 6055 ko:K21013 rn:R08144        C00448;C01126 CKO2483</code></pre>
+<pre><code>##             KO        RN                                       CPD     CKO
+## 9401 ko:K20981 rn:R07251        C00019;C00021;C00083;C00229;C21108 CKO5070
+## 9402 ko:K20982 rn:R07251        C00019;C00021;C00083;C00229;C21108 CKO5070
+## 4928 ko:K02228 rn:R05219 C00019;C00021;C00033;C06320;C06416;C06416 CKO2027
+## 7202 ko:K12711 rn:R06767 C00019;C00021;C00363;C12479;C12480;C12481 CKO3375
+## 7203 ko:K12712 rn:R06767 C00019;C00021;C00363;C12479;C12480;C12481 CKO3375
+## 7364 ko:K13060 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7365 ko:K13061 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7366 ko:K13062 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7367 ko:K20248 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7368 ko:K20249 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7369 ko:K20250 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7370 ko:K22954 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7371 ko:K22955 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7372 ko:K22956 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7373 ko:K22957 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7374 ko:K22968 rn:R08940               C00019;C00170;C00173;C00229 CKO3508
+## 7375 ko:K13061 rn:R08939               C00019;C00170;C00229;C05745 CKO3509
+## 5154 ko:K03147 rn:R03472 C00019;C00058;C00073;C03373;C03373;C04556 CKO2131
+## 1751 ko:K00552 rn:R00367               C00019;C00021;C00037;C00213  CKO687
+## 9060 ko:K18896 rn:R10060               C00019;C00021;C00037;C01026 CKO4778
+## 5160 ko:K03150 rn:R10246 C00019;C00073;C00082;C00082;C01468;C15809 CKO2134
+## 7669 ko:K13621 rn:R09072               C00019;C00170;C00641;C18168 CKO3739
+## 7670 ko:K13622 rn:R09072               C00019;C00170;C00641;C18168 CKO3739</code></pre>
 <p>Map the retrieved KOs on the names form the Hierarchy:</p>
 <pre class="r"><code>concussion &lt;- function(df1, df2, col1){
   
   df3 &lt;- 1:(ncol(df1)+ncol(df2)-1)
   
-  inter_inex &lt;- unique(df1[,col1])[unique(df1[,col1])%in%unique(df2[,col1])]
+  inter_index &lt;- unique(df1[,col1])[unique(df1[,col1])%in%unique(df2[,col1])]
   
-  for(i in inter_inex){
+  for(i in inter_index){
     
     left_block &lt;- as.data.frame(explosion(df1, col1, i))
     right_block &lt;- as.data.frame(explosion(df2, col1, i)[,colnames(df2)[colnames(df2)!=col1]])
@@ -346,27 +336,35 @@ ko2cko.subset</code></pre>
 }
 
 to_map &lt;- ko2cko.subset %&gt;%
-  mutate(D_code=unlist(str_split(KO, &quot;:&quot;))[2])
+  separate(KO, c(&quot;ko&quot;, &quot;D_code&quot;), 3) %&gt;%
+  select(-ko)
 
 mapped_df &lt;- concussion(KOmap.df, to_map, &quot;D_code&quot;)
 
 mapped_df %&gt;%
   group_by(D_name, CKO) %&gt;%
   summarise(n=n())</code></pre>
-<pre><code>## # A tibble: 10 x 3
+<pre><code>## # A tibble: 17 x 3
 ## # Groups:   D_name [?]
-##    D_name                                 CKO         n
-##    &lt;chr&gt;                                  &lt;chr&gt;   &lt;int&gt;
-##  1 &quot; FDPS; farnesyl diphosphate synthase&quot; CKO1879     2
-##  2 &quot; FDPS; farnesyl diphosphate synthase&quot; CKO1881     2
-##  3 &quot; FDPS; farnesyl diphosphate synthase&quot; CKO2024     2
-##  4 &quot; FDPS; farnesyl diphosphate synthase&quot; CKO2304     4
-##  5 &quot; FDPS; farnesyl diphosphate synthase&quot; CKO2308     2
-##  6 &quot; FDPS; farnesyl diphosphate synthase&quot; CKO2483     4
-##  7 &quot; FDPS; farnesyl diphosphate synthase&quot; CKO418     10
-##  8 &quot; FDPS; farnesyl diphosphate synthase&quot; CKO454      4
-##  9 &quot; FDPS; farnesyl diphosphate synthase&quot; CKO461     12
-## 10 &quot; FDPS; farnesyl diphosphate synthase&quot; CKO463     24</code></pre>
+##    D_name                                                     CKO        n
+##    &lt;chr&gt;                                                      &lt;chr&gt;  &lt;int&gt;
+##  1 &quot; ainS, luxM; acyl homoserine lactone synthase&quot;            CKO35…     1
+##  2 &quot; cciI; acyl homoserine lactone synthase&quot;                  CKO35…     1
+##  3 &quot; cinI; acyl homoserine lactone synthase&quot;                  CKO35…     1
+##  4 &quot; cobF; precorrin-6A synthase&quot;                             CKO20…     1
+##  5 &quot; cviI; acyl homoserine lactone synthase&quot;                  CKO35…     1
+##  6 &quot; expI, esaI; acyl homoserine lactone synthase&quot;            CKO35…     1
+##  7 &quot; GNMT; glycine N-methyltransferase&quot;                       CKO687     1
+##  8 &quot; gsmt; glycine/sarcosine N-methyltransferase&quot;             CKO47…     1
+##  9 &quot; lasI; acyl homoserine lactone synthase&quot;                  CKO35…     1
+## 10 &quot; luxI; acyl homoserine lactone synthase&quot;                  CKO35…     1
+## 11 &quot; raiI; acyl homoserine lactone synthase&quot;                  CKO35…     1
+## 12 &quot; rhlI, phzI, solI, cepI, tofI; acyl homoserine lactone s… CKO35…     2
+## 13 &quot; rhlI, phzI, solI, cepI, tofI; acyl homoserine lactone s… CKO35…     2
+## 14 &quot; sinI, avsI; acyl homoserine lactone synthase&quot;            CKO35…     1
+## 15 &quot; thiC; phosphomethylpyrimidine synthase&quot;                  CKO21…     1
+## 16 &quot; thiH; 2-iminoacetate synthase&quot;                           CKO21…     1
+## 17 &quot; traI, avsI; acyl homoserine lactone synthase&quot;            CKO35…     1</code></pre>
 <pre class="r"><code>rm(ko2cko.subset, to_map, mapped_df)</code></pre>
 </div>
 <div id="average-degree-of-different-metabolisms" class="section level3">
@@ -386,7 +384,7 @@ to_map &lt;- ko2cko.subset %&gt;%
 deg2KOmap &lt;- concussion(to_map, KOmap.metabolism, &quot;D_code&quot;)
 
 dim(deg2KOmap)</code></pre>
-<pre><code>## [1] 5580   14</code></pre>
+<pre><code>## [1] 8876   14</code></pre>
 <p>Plot the everage degree vs. the number of nodes for each metabolism.</p>
 <pre class="r"><code>plt1 &lt;- deg2KOmap %&gt;%
   group_by(B_name, C_name) %&gt;%
@@ -413,17 +411,15 @@ plt1</code></pre>
 
 table(table(components(G)$membership)) # Number of connected componenets per number of nodes in it</code></pre>
 <pre><code>## 
-##    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15 
-##  415  125   64   33   17    6    8    1    3    1    2    2    2    1    1 
-##   16   21   23   24   26   27   28   29   31   43 1728 
-##    1    1    1    1    1    1    1    1    1    1    1</code></pre>
+##    1    2    3    4    5    6    7    8   13   16   27 4995 
+##  142   40   12   10    5    1    4    1    1    1    1    1</code></pre>
 <pre class="r"><code>to_map &lt;- ko2cko %&gt;%
   separate(KO, c(&quot;ko&quot;, &quot;D_code&quot;), sep=&quot;:&quot;) %&gt;%
   select(-ko)
 
 CKO2KOmap &lt;- concussion(to_map, KOmap.df, &quot;D_code&quot;)
 
-G1.names &lt;- names(components(G)$membership)[components(G)$membership==2] # Isolate the largest component
+G1.names &lt;- names(components(G)$membership)[components(G)$membership==1] # Isolate the largest component
 G1 &lt;- graph_from_adjacency_matrix(adj[G1.names,G1.names], mode=c(&quot;undirected&quot;), weighted = NULL, diag = TRUE)
 plot(degree.distribution(G1))</code></pre>
 <p><img src="net_analyzer_files/figure-html/Plot%20network-1.png" width="672" /></p>

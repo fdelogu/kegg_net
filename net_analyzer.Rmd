@@ -94,9 +94,9 @@ concussion <- function(df1, df2, col1){
   
   df3 <- 1:(ncol(df1)+ncol(df2)-1)
   
-  inter_inex <- unique(df1[,col1])[unique(df1[,col1])%in%unique(df2[,col1])]
+  inter_index <- unique(df1[,col1])[unique(df1[,col1])%in%unique(df2[,col1])]
   
-  for(i in inter_inex){
+  for(i in inter_index){
     
     left_block <- as.data.frame(explosion(df1, col1, i))
     right_block <- as.data.frame(explosion(df2, col1, i)[,colnames(df2)[colnames(df2)!=col1]])
@@ -116,7 +116,8 @@ concussion <- function(df1, df2, col1){
 }
 
 to_map <- ko2cko.subset %>%
-  mutate(D_code=unlist(str_split(KO, ":"))[2])
+  separate(KO, c("ko", "D_code"), 3) %>%
+  select(-ko)
 
 mapped_df <- concussion(KOmap.df, to_map, "D_code")
 
@@ -188,7 +189,7 @@ to_map <- ko2cko %>%
 
 CKO2KOmap <- concussion(to_map, KOmap.df, "D_code")
 
-G1.names <- names(components(G)$membership)[components(G)$membership==2] # Isolate the largest component
+G1.names <- names(components(G)$membership)[components(G)$membership==1] # Isolate the largest component
 G1 <- graph_from_adjacency_matrix(adj[G1.names,G1.names], mode=c("undirected"), weighted = NULL, diag = TRUE)
 plot(degree.distribution(G1))
 
